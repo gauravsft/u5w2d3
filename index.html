@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fecting data from IDMB</title>
+</head>
+<style>
+    #inputForm {
+        text-align: center;
+        margin-top: 20px;
+        border: 2px solid green;
+        width: 80%;
+        height: 10%;
+        margin: auto;
+        background-color: aquamarine;
+    }
+
+    #container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        justify-content: center;
+        width: 80%;
+        margin: auto;
+        margin-top: 2.5%;
+
+    }
+
+    #flex {
+        display: flex;
+        flex-direction: column;
+
+    }
+
+    #movieName {
+        height: 30px;
+        border-radius: 5px;
+        ;
+    }
+
+    button {
+        height: 30px;
+        margin-top: 5px;
+        width: 80px;
+    }
+</style>
+
+<body>
+    <form id="inputForm">
+        <div id="flex">
+            <caption>
+                <h3>Search Movies</h3>
+            </caption>
+            <input type="text" id="movieName" placeholder="Search like:-The Lego Movie" />
+        </div>
+        <button type="submit">search</button>
+    </form>
+
+    <div id="container">
+
+    </div>
+</body>
+<script>
+    // var API_key='2ddbdddb';
+    var apikey = "9c9092cf";
+    var url = "http://www.omdbapi.com/?i=tt3896198";
+
+    document.querySelector('form').addEventListener('submit', function () {
+        event.preventDefault()
+        var movie = document.getElementById('movieName').value;
+
+        fetch('http://www.omdbapi.com/?i=tt3896198&apikey=7c7a3478&s={movie}').then((response) => {
+            response.json().then((result) => {
+                var movieData = result.Search;
+                console.log(result);
+                function displayData(movieData) {
+                    document.querySelector("#container").innerText = "";
+                    movieData.forEach(function (data) {
+
+                        var box = document.createElement("div");
+
+                        var img = document.createElement('img')
+                        img.src = data.Poster;
+                        img.style.width = "100%";
+                        img.style.height = "400px";
+
+                        var name = document.createElement('p');
+                        name.innerText = data.Title;
+
+
+                        var year = document.createElement('p');
+                        year.innerText = "Relase Year :" + data.Year;
+
+                        var IMDB = document.createElement('p');
+                        IMDB.innerText = data.imdbID;
+
+                        box.append(img, name, year, IMDB);
+
+                        document.querySelector("#container").append(box);
+
+
+                    });
+                }
+
+                var dummy = movieData;
+                function searchMe(movie) {
+
+                    if (movie == '') {
+                        var img = document.createElement("img");
+                        img.src = "https://cdn.dribbble.com/users/602333/screenshots/6305928/attachments/1350583/nothing-found.png?compress=1&resize=800x600&vertical=top";
+                        img.style.width = "100%";
+                        document.querySelector("#container").append(img);
+
+                    } else {
+                        var searchData = dummy.filter(function (mv) {
+                            if (mv.Title.includes(movie)) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        });
+                        return searchData;
+                    }
+
+
+                }
+
+                var searchedData = searchMe(movie);
+                if (searchedData.length == 0) {
+                    var img = document.createElement("img");
+                    img.src = "https://cdn.dribbble.com/users/602333/screenshots/6305928/attachments/1350583/nothing-found.png?compress=1&resize=800x600&vertical=top";
+                    img.style.width = "100%";
+                    document.querySelector("#container").append(img);
+
+                } else {
+                    searchedData.forEach(function (dt) {
+                        var rate = dt.imdbID;
+                        rate = rate.substring(7, rate.length);
+                        //console.log(rate);
+                        if (+rate > 9) {
+
+                            dt.imdbID = "HIT:" + " " + dt.imdbID;
+
+                        }
+                    });
+                    displayData(searchedData);
+                }
+
+
+            });
+
+        }).catch(function (err) {
+            console.log(err)
+        });
+    });
+
+</script>
+
+</html>
